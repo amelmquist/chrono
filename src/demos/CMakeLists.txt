@@ -6,7 +6,7 @@ set(CMAKE_SKIP_BUILD_RPATH  FALSE)
 
 # when building, don't use the install RPATH already
 # (but later on when installing)
-set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
+set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 
 set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib64")
 
@@ -69,7 +69,7 @@ if(ENABLE_MODULE_MKL)
 		add_subdirectory(mkl)
 	endif()
 endif()
-	
+
 #if(ENABLE_MODULE_MPI)
 #	add_subdirectory(mpi)
 #endif()
@@ -130,6 +130,14 @@ if(ENABLE_MODULE_VEHICLE)
   	endif()
 endif()
 
+if(ENABLE_MODULE_SENSORS)
+	option(BUILD_DEMOS_SENSORS "Build demo programs for sensors module" TRUE)
+	mark_as_advanced(FORCE BUILD_DEMOS_SENSORS)
+	if(BUILD_DEMOS_SENSORS)
+  		add_subdirectory(sensors)
+  	endif()
+endif()
+
 if(ENABLE_MODULE_FSI)
  	option(BUILD_DEMOS_FSI "Build demo programs for FSI module" TRUE)
  	mark_as_advanced(FORCE BUILD_DEMOS_FSI)
@@ -137,5 +145,3 @@ if(ENABLE_MODULE_FSI)
   		add_subdirectory(fsi)
   	endif()
 endif()
-
-
