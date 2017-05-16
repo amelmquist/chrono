@@ -16,9 +16,9 @@ message(STATUS "==== Chrono Sensors module ====")
 # Generate the configuration header file using substitution variables.
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/ChConfigSensors.h.in
-               ${PROJECT_BINARY_DIR}/chrono_Sensors/ChConfigSensors.h)
+               ${PROJECT_BINARY_DIR}/chrono_sensors/ChConfigSensors.h)
 
-install(FILES "${PROJECT_BINARY_DIR}/chrono_Sensors/ChConfigSensors.h"
+install(FILES "${PROJECT_BINARY_DIR}/chrono_sensors/ChConfigSensors.h"
         DESTINATION include/chrono_sensors)
 
 # ----------------------------------------------------------------------------
@@ -27,7 +27,7 @@ install(FILES "${PROJECT_BINARY_DIR}/chrono_Sensors/ChConfigSensors.h"
 
 # --------------- COMMON FILES
 
-set(CV_BASE_FILES
+set(CS_BASE_FILES
 		ChApiSensors.h
     ChSensor.h
 		ChSensor.cpp
@@ -40,7 +40,7 @@ set(CV_BASE_FILES
 		ChIMU.h
 		ChIMU.cpp
 )
-source_group("base" FILES ${CV_BASE_FILES})
+source_group("base" FILES ${CS_BASE_FILES})
 
 # ----------------------------------------------------------------------------
 # Add the ChronoEngine_Sensors library
@@ -70,7 +70,7 @@ endif()
 
 add_library(ChronoEngine_sensors SHARED
 #
-    ${CV_BASE_FILES}
+    ${CS_BASE_FILES}
 )
 
 set_target_properties(ChronoEngine_sensors PROPERTIES
