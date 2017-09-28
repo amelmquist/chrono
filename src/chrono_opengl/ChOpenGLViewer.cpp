@@ -482,12 +482,12 @@ void ChOpenGLViewer::DrawObject(std::shared_ptr<ChBody> abody) {
             for (unsigned int ig = 0; ig < 200; ig++) {
                 double mU = maxU * ((double)ig / (double)(200 - 1));  // abscyssa
                 ChVector<> t2;
-                mline->Evaluate(t2, mU, 0, 0);
+                mline->Evaluate(t2, mU);
                 t2 = pos_final + lrot.Rotate(t2);
                 line_path_data.push_back(glm::vec3(t2.x(), t2.y(), t2.z()));
 
                 mU = maxU * ((double)(ig + 1) / (double)(200 - 1));  // abscyssa
-                mline->Evaluate(t2, mU, 0, 0);
+                mline->Evaluate(t2, mU);
                 t2 = pos_final + lrot.Rotate(t2);
                 line_path_data.push_back(glm::vec3(t2.x(), t2.y(), t2.z()));
             }
@@ -572,14 +572,14 @@ void ChOpenGLViewer::RenderFluid() {
         fluid_data[i] = glm::vec3(pos.x, pos.y, pos.z);
     }
 
-    if (ChFluidContainer* fluid_container =
-            dynamic_cast<ChFluidContainer*>(parallel_system->data_manager->node_container)) {
+    if (auto fluid_container =
+            std::dynamic_pointer_cast<ChFluidContainer>(parallel_system->data_manager->node_container)) {
         fluid.SetPointSize(float(fluid_container->kernel_radius * .75));
+    } else if (auto particle_container =
+                   std::dynamic_pointer_cast<ChParticleContainer>(parallel_system->data_manager->node_container)) {
+        fluid.SetPointSize(float(particle_container->kernel_radius * .75));
     }
-    if (Ch3DOFRigidContainer* rigid_container =
-            dynamic_cast<Ch3DOFRigidContainer*>(parallel_system->data_manager->node_container)) {
-        fluid.SetPointSize(float(rigid_container->kernel_radius * .75));
-    }
+
     fluid.Update(fluid_data);
     glm::mat4 model(1);
     fluid.Draw(projection, view * model);

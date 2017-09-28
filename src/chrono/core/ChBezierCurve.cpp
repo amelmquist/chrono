@@ -2,7 +2,7 @@
 // PROJECT CHRONO - http://projectchrono.org
 //
 // Copyright (c) 2014 projectchrono.org
-// All right reserved.
+// All rights reserved.
 //
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file at the top level of the distribution and at
@@ -261,7 +261,7 @@ void ChBezierCurve::write(const std::string& filename) {
     size_t numPoints = m_points.size();
     ofile << numPoints << "  9\n";
 
-    // Write points and control polygone vertices
+    // Write points and control polygon vertices
     for (size_t i = 0; i < numPoints; i++) {
         ofile << m_points[i].x() << "  " << m_points[i].y() << "  " << m_points[i].z() << "     ";
         ofile << m_inCV[i].x() << "  " << m_inCV[i].y() << "  " << m_inCV[i].z() << "     ";
@@ -323,6 +323,23 @@ ChVector<> ChBezierCurve::evalDD(size_t i, double t) const {
     double B3 = 6 * t;
 
     return B0 * m_points[i] + B1 * m_outCV[i] + B2 * m_inCV[i + 1] + B3 * m_points[i + 1];
+}
+
+// -----------------------------------------------------------------------------
+// ChBezierCurve::eval()
+//
+// This function evaluates the value of this Bezier curve at the specified value.
+// A value t=0 returns the first point of the Bezier curve.
+// A value t=1 returns the last point of the Bezier curve.
+// -----------------------------------------------------------------------------
+ChVector<> ChBezierCurve::eval(double t) const {
+    double par = ChClamp(t, 0.0, 1.0);
+    size_t numIntervals = getNumPoints() - 1;
+    double epar = par * numIntervals;
+    size_t i = static_cast<size_t>(std::floor(par * numIntervals));
+    ChClampValue(i, size_t(0), numIntervals - 1);
+
+    return eval(i, epar - (double)i);
 }
 
 // -----------------------------------------------------------------------------

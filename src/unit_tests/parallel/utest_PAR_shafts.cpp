@@ -2,7 +2,7 @@
 // PROJECT CHRONO - http://projectchrono.org
 //
 // Copyright (c) 2014 projectchrono.org
-// All right reserved.
+// All rights reserved.
 //
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file at the top level of the distribution and at
@@ -281,8 +281,8 @@ bool TestShaftBody(const char* test_name, ChMaterialSurface::ContactMethod cm) {
   double spring_trqA = -1.38162;  // spring torque on shaftA
   double spring_trqC = 1.38162;   // spring torque on shaftC
 
-  double trqA = 2.83766;   // reaction on shaftA
-  double trqB = -2.83766;  // reaction on bodyB (z component)
+  double trqA = -2.83766;   // reaction on shaftA
+  double trqB = 2.83766;  // reaction on bodyB (z component)
 
   if (std::abs(shaftA->GetPos() - posA) > tol_pos || std::abs(shaftA->GetPos_dt() - velA) > tol_vel ||
       std::abs(shaftA->GetPos_dtdt() - accA) > tol_acc)

@@ -2,7 +2,7 @@
 // PROJECT CHRONO - http://projectchrono.org
 //
 // Copyright (c) 2014 projectchrono.org
-// All right reserved.
+// All rights reserved.
 //
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file at the top level of the distribution and at
@@ -172,7 +172,7 @@ void ChLineCam::EvaluateCamPoint(double par, ChVector<>& res, double& g, double&
     res.y() = this->center.y() + r * sin(f + phase);
 }
 
-void ChLineCam::Evaluate(ChVector<>& pos, const double parU, const double parV, const double parW) const {
+void ChLineCam::Evaluate(ChVector<>& pos, const double parU) const {
     double qtmp, gtmp;
     EvaluateCamPoint(parU, pos, gtmp, qtmp);
 }

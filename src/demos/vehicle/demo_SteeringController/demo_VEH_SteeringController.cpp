@@ -2,7 +2,7 @@
 // PROJECT CHRONO - http://projectchrono.org
 //
 // Copyright (c) 2014 projectchrono.org
-// All right reserved.
+// All rights reserved.
 //
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file at the top level of the distribution and at
@@ -27,6 +27,7 @@
 #include "chrono_vehicle/terrain/RigidTerrain.h"
 #include "chrono_vehicle/driver/ChIrrGuiDriver.h"
 #include "chrono_vehicle/driver/ChPathFollowerDriver.h"
+#include "chrono_vehicle/utils/ChVehiclePath.h"
 #include "chrono_vehicle/wheeled_vehicle/utils/ChWheeledVehicleIrrApp.h"
 
 #include "chrono_models/vehicle/hmmwv/HMMWV.h"
@@ -64,9 +65,9 @@ VisualizationType tire_vis_type = VisualizationType::PRIMITIVES;
 // Input file names for the path-follower driver model
 std::string steering_controller_file("generic/driver/SteeringController.json");
 std::string speed_controller_file("generic/driver/SpeedController.json");
-// std::string path_file("paths/straight.txt");
-// std::string path_file("paths/curve.txt");
-// std::string path_file("paths/NATO_double_lane_change.txt");
+////std::string path_file("paths/straight.txt");
+////std::string path_file("paths/curve.txt");
+////std::string path_file("paths/NATO_double_lane_change.txt");
 std::string path_file("paths/ISO_double_lane_change.txt");
 
 // Initial vehicle location and orientation
@@ -99,7 +100,7 @@ bool debug_output = false;
 double debug_fps = 10;
 
 // Output directories
-const std::string out_dir = "../STEERING_CONTROLLER";
+const std::string out_dir = GetChronoOutputPath() + "STEERING_CONTROLLER";
 const std::string pov_dir = out_dir + "/POVRAY";
 
 // POV-Ray output
@@ -187,6 +188,8 @@ class ChDriverSelector : public irr::IEventReceiver {
 // =============================================================================
 
 int main(int argc, char* argv[]) {
+    GetLog() << "Copyright (c) 2017 projectchrono.org\nChrono version: " << CHRONO_VERSION << "\n\n";
+
     // ------------------------------
     // Create the vehicle and terrain
     // ------------------------------
@@ -222,7 +225,15 @@ int main(int argc, char* argv[]) {
     // Create the Bezier path
     // ----------------------
 
+    // From data file
     auto path = ChBezierCurve::read(vehicle::GetDataFile(path_file));
+
+    // Parameterized ISO double lane change (to left)
+    ////auto path = DoubleLaneChangePath(ChVector<>(-125, -125, 0.1), 13.5, 4.0, 11.0, 50.0, true);
+
+    // Parameterized NATO double lane change (to right)
+    ////auto path = DoubleLaneChangePath(ChVector<>(-125, -125, 0.1), 28.93, 3.6105, 25.0, 50.0, false);
+ 
     ////path->write("my_path.txt");
 
     // ---------------------------------------

@@ -1,14 +1,16 @@
-//
+// =============================================================================
 // PROJECT CHRONO - http://projectchrono.org
 //
-// Copyright (c) 2013 Project Chrono
+// Copyright (c) 2014 projectchrono.org
 // All rights reserved.
 //
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file at the top level of the distribution
-// and at http://projectchrono.org/license-chrono.txt.
+// Use of this source code is governed by a BSD-style license that can be found
+// in the LICENSE file at the top level of the distribution and at
+// http://projectchrono.org/license-chrono.txt.
 //
-// File authors: Alessandro Tasora
+// =============================================================================
+// Authors: Alessandro Tasora
+// =============================================================================
 
 #ifndef CHLOADSBODY_H
 #define CHLOADSBODY_H
@@ -353,7 +355,7 @@ public:
 
 class ChLoadBodyBodyBushingPlastic : public ChLoadBodyBodyBushingSpherical {
 protected:
-    ChVector<> yeld;
+    ChVector<> yield;
     ChVector<> plastic_def;
    
 public:
@@ -363,10 +365,10 @@ public:
                           const ChFrame<> abs_application,  ///< create the bushing here, in abs. coordinates. Initial alignment as world xyz.
                           const ChVector<> mstiffness,      ///< stiffness, along x y z axes of the abs_application
                           const ChVector<> mdamping,        ///< damping, along x y z axes of the abs_application
-                          const ChVector<> myeld            ///< plastic yeld, along x y z axes of the abs_application
+                          const ChVector<> myeld            ///< plastic yield, along x y z axes of the abs_application
                         ) 
          : ChLoadBodyBodyBushingSpherical(mbodyA,mbodyB,abs_application, mstiffness, mdamping), 
-           yeld(myeld),
+           yield(myeld),
            plastic_def(VNULL) {         
         }
 
@@ -382,28 +384,28 @@ public:
 
         // A basic plasticity, assumed with box capping, without hardening:
         
-        if (loc_force.x() > yeld.x()) {
-            loc_force.x() = yeld.x();
+        if (loc_force.x() > yield.x()) {
+            loc_force.x() = yield.x();
             plastic_def.x() = rel_AB.GetPos().x() - loc_force.x() / this->stiffness.x();
         }
-        if (loc_force.x() < -yeld.x()) {
-            loc_force.x() = -yeld.x();
+        if (loc_force.x() < -yield.x()) {
+            loc_force.x() = -yield.x();
             plastic_def.x() = rel_AB.GetPos().x() - loc_force.x() / this->stiffness.x();
         }
-        if (loc_force.y() > yeld.y()) {
-            loc_force.y() = yeld.y();
+        if (loc_force.y() > yield.y()) {
+            loc_force.y() = yield.y();
             plastic_def.y() = rel_AB.GetPos().y() - loc_force.y() / this->stiffness.y();
         }
-        if (loc_force.y() < -yeld.y()) {
-            loc_force.y() = -yeld.y();
+        if (loc_force.y() < -yield.y()) {
+            loc_force.y() = -yield.y();
             plastic_def.y() = rel_AB.GetPos().y() - loc_force.y() / this->stiffness.y();
         }
-        if (loc_force.z() > yeld.z()) {
-            loc_force.z() = yeld.z();
+        if (loc_force.z() > yield.z()) {
+            loc_force.z() = yield.z();
             plastic_def.z() = rel_AB.GetPos().z() - loc_force.z() / this->stiffness.z();
         }
-        if (loc_force.z() < -yeld.z()) {
-            loc_force.z() = -yeld.z();
+        if (loc_force.z() < -yield.z()) {
+            loc_force.z() = -yield.z();
             plastic_def.z() = rel_AB.GetPos().z() - loc_force.z() / this->stiffness.z();
         }
         
@@ -415,13 +417,13 @@ public:
     virtual bool IsStiff() {return true;}
 
 
-        /// Set plastic yeld, forces beyond this limit will be capped. 
+        /// Set plastic yield, forces beyond this limit will be capped. 
         /// Expressed along the x y z axes of loc_application_B, es [N/m].
-    void SetYeld(const ChVector<> myeld) {this->yeld = myeld;}
-    ChVector<> GetYeld() const {return this->yeld;}
+    void SetYeld(const ChVector<> myeld) {this->yield = myeld;}
+    ChVector<> GetYeld() const {return this->yield;}
 
         /// Get the current accumulated plastic deformation, in [m], that
-        /// could become nonzero if forces went beyond the plastic yeld.
+        /// could become nonzero if forces went beyond the plastic yield.
     ChVector<> GetPlasticDeformation() const {return this->plastic_def;}
 
 };
@@ -496,7 +498,7 @@ public:
 /// bushing, assumed expressed in the bushing coordinate system  attached 
 /// to the second body. A user-defined 6x6 matrix [D] can be defined for damping, as well. 
 /// Note that this assumes small rotations.
-/// Differently from the simplier ChLoadBodyBodyBushingMate and ChLoadBodyBodyBushingSpherical
+/// Differently from the simpler ChLoadBodyBodyBushingMate and ChLoadBodyBodyBushingSpherical
 /// this can represent coupled effects, by using extra-diagonal terms in [K] and/or [D].
 
 class ChLoadBodyBodyBushingGeneric : public ChLoadBodyBody {
@@ -504,6 +506,10 @@ protected:
     ChMatrixNM<double,6,6> stiffness;
     ChMatrixNM<double,6,6> damping;
    
+    ChVector<> neutral_force;
+    ChVector<> neutral_torque;
+    ChFrame<>  neutral_displacement;
+
 public:
     ChLoadBodyBodyBushingGeneric(
                           std::shared_ptr<ChBody> mbodyA,   ///< object A
@@ -514,7 +520,7 @@ public:
                         ) 
          : ChLoadBodyBody(mbodyA,mbodyB,abs_application), 
            stiffness(mstiffness),
-           damping(mdamping) {         
+           damping(mdamping) {
         }
 
         /// Implement the computation of bushing force, in local 
@@ -528,16 +534,17 @@ public:
         ChVectorDynamic<> mF(6);
         ChVectorDynamic<> mS(6);
         ChVectorDynamic<> mSdt(6);
-        ChQuaternion<> rel_rot = rel_AB.GetRot();
-        mS.PasteVector(rel_AB.GetPos(), 0,0);
+        ChVector<>     rel_pos = rel_AB.GetPos() + this->neutral_displacement.GetPos();
+        ChQuaternion<> rel_rot = rel_AB.GetRot() * this->neutral_displacement.GetRot();
+        mS.PasteVector(rel_pos, 0,0);
         mS.PasteVector(rel_rot.Q_to_Rotv(), 3,0);
         mSdt.PasteVector(rel_AB.GetPos_dt(), 0,0);
         mSdt.PasteVector(rel_AB.GetWvel_par(), 3,0);
         
         mF = stiffness * mS + damping * mSdt;
         
-        loc_force   = mF.ClipVector(0,0);
-        loc_torque  = mF.ClipVector(3,0);
+        loc_force   = mF.ClipVector(0,0) - this->neutral_force;
+        loc_torque  = mF.ClipVector(3,0) - this->neutral_torque;
     }
 
     virtual bool IsStiff() {return true;}
@@ -552,6 +559,23 @@ public:
         /// coordinate system of loc_application_B.
     void SetDampingMatrix(const ChMatrix<>& mdamping) {this->damping = mdamping;}
     const ChMatrix<>& GetDampingMatrix() const {return this->damping;}
+
+        /// Set the initial pre-load of the bushing, applied to loc_application_A, 
+        /// expressed in local coordinate system of loc_application_B.
+        /// By default it is zero.
+    void SetNeutralForce(const ChVector<> mf) {this->neutral_force = mf;}
+    ChVector<> GetNeutralForce() const {return this->neutral_force;}
+
+        /// Set the initial pre-load torque of the bushing, appliet to loc_application_A, 
+        /// expressed in local coordinate system of loc_application_B. 
+        /// By default it is zero.
+    void SetNeutralTorque(const ChVector<> mt) {this->neutral_torque = mt;}
+    ChVector<> GetNeutralTorque() const {return this->neutral_torque;}
+
+        /// Set/get the initial pre-displacement of the bushing, as the pre-displacement
+        /// of A, expressed in local coordinate system of loc_application_B. 
+        /// Default behavior is no initial pre-displacement.
+    ChFrame<>& NeutralDisplacement() {return this->neutral_displacement;}
 
 };
 

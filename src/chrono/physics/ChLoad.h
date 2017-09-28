@@ -1,13 +1,15 @@
-//
+// =============================================================================
 // PROJECT CHRONO - http://projectchrono.org
 //
-// Copyright (c) 2013 Project Chrono
+// Copyright (c) 2014 projectchrono.org
 // All rights reserved.
 //
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file at the top level of the distribution
-// and at http://projectchrono.org/license-chrono.txt.
+// Use of this source code is governed by a BSD-style license that can be found
+// in the LICENSE file at the top level of the distribution and at
+// http://projectchrono.org/license-chrono.txt.
 //
+// =============================================================================
+
 
 #ifndef CHLOAD_H
 #define CHLOAD_H
@@ -54,9 +56,6 @@ class ChLoadJacobians {
 /// matrix of the load) that can be used in implicit integrators, statics, etc.
 
 class ChApi ChLoadBase {
-
-    // Tag needed for class factory in archive (de)serialization:
-    CH_FACTORY_TAG(ChLoadBase)
 
 protected:
     ChLoadJacobians* jacobians;
@@ -180,7 +179,7 @@ public:
 
 /// Class for a load acting on a single ChLoadable item, via ChLoader objects.
 /// There are various ChLoader interfaces ready to use, that can be used
-/// as 'building blocks'. These are expecially important for creating loads
+/// as 'building blocks'. These are especially important for creating loads
 /// that are distributed on surfaces, lines, volumes, since some ChLoaders implement quadrature.
 /// Create them as ChLoad< ChLoaderPressure > my_load(...); for example.
 
@@ -551,7 +550,7 @@ public:
 
  
     virtual void LoadIntLoadResidual_F(ChVectorDynamic<>& R, const double c) {
-        unsigned int rowQ = 0;
+        unsigned int mQoffset = 0;
         for (int k= 0; k<loadables.size(); ++k) {
             std::vector<ChVariables*> kvars;
             loadables[k]->LoadableGetVariables(kvars);
@@ -559,13 +558,13 @@ public:
                 if (kvars[i]->IsActive()) {
                     unsigned int mblockoffset = loadables[k]->GetSubBlockOffset(i);
                     for (unsigned int row =0; row< loadables[k]->GetSubBlockSize(i); ++row) {
-                        R(row + mblockoffset) += this->load_Q(rowQ) * c;
-                        ++rowQ;
+                        R(row + mblockoffset) += this->load_Q(row + mQoffset) * c;
                     }
                 }
+                mQoffset += loadables[k]->GetSubBlockSize(i);
             }
         }
-        // GetLog() << " debug: R=" << R << "\n";
+       //GetLog() << " debug: R=" << R << "\n";
     };
 
         /// Return true if stiff load. 

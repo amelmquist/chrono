@@ -2,7 +2,7 @@
 // PROJECT CHRONO - http://projectchrono.org
 //
 // Copyright (c) 2014 projectchrono.org
-// All right reserved.
+// All rights reserved.
 //
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file at the top level of the distribution and at
@@ -41,7 +41,7 @@ ChLineBezier::ChLineBezier(const ChLineBezier& source) : ChLine(source) {
     complexityU = source.complexityU;
 }
 
-void ChLineBezier::Evaluate(ChVector<>& pos, const double parU, const double parV, const double parW) const {
+void ChLineBezier::Evaluate(ChVector<>& pos, const double parU) const {
     double par = ChClamp(parU, 0.0, 1.0);
     size_t numIntervals = m_path->getNumPoints() - 1;
     double epar = par * numIntervals;

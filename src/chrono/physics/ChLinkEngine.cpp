@@ -2,7 +2,7 @@
 // PROJECT CHRONO - http://projectchrono.org
 //
 // Copyright (c) 2014 projectchrono.org
-// All right reserved.
+// All rights reserved.
 //
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file at the top level of the distribution and at
@@ -230,7 +230,7 @@ void ChLinkEngine::UpdateTime(double mytime) {
     mot_rerot_dt = mot_rot_dt / mot_tau;
     mot_rerot_dtdt = mot_rot_dtdt / mot_tau;
 
-    // nothing more to do here fortorque control
+    // nothing more to do here for torque control
     if (eng_mode == ENG_MODE_TORQUE)
         return;
 
@@ -464,8 +464,8 @@ void ChLinkEngine::IntStateGatherReactions(const unsigned int off_L, ChVectorDyn
     ChLinkLock::IntStateGatherReactions(off_L, L);
 
     if (eng_mode == ENG_MODE_TO_POWERTRAIN_SHAFT) {
-        innershaft1->IntStateGatherReactions(off_L + 0, L);
-        innershaft2->IntStateGatherReactions(off_L + 1, L);
+        innerconstraint1->IntStateGatherReactions(off_L + 0, L);
+        innerconstraint2->IntStateGatherReactions(off_L + 1, L);
     }
 }
 
@@ -474,8 +474,8 @@ void ChLinkEngine::IntStateScatterReactions(const unsigned int off_L, const ChVe
     ChLinkLock::IntStateScatterReactions(off_L, L);
 
     if (eng_mode == ENG_MODE_TO_POWERTRAIN_SHAFT) {
-        innershaft1->IntStateScatterReactions(off_L + 0, L);
-        innershaft2->IntStateScatterReactions(off_L + 1, L);
+        innerconstraint1->IntStateScatterReactions(off_L + 0, L);
+        innerconstraint2->IntStateScatterReactions(off_L + 1, L);
     }
 }
 

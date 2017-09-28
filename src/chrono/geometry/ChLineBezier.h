@@ -2,7 +2,7 @@
 // PROJECT CHRONO - http://projectchrono.org
 //
 // Copyright (c) 2014 projectchrono.org
-// All right reserved.
+// All rights reserved.
 //
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file at the top level of the distribution and at
@@ -30,15 +30,15 @@ namespace geometry {
 /// Geometric object representing a piecewise cubic Bezier curve in 3D.
 class ChApi ChLineBezier : public ChLine {
 
-    // Tag needed for class factory in archive (de)serialization:
-    CH_FACTORY_TAG(ChLineBezier)
-
   public:
     ChLineBezier() {}
     ChLineBezier(std::shared_ptr<ChBezierCurve> path);
     ChLineBezier(const std::string& filename);
     ChLineBezier(const ChLineBezier& source);
     ~ChLineBezier() {}
+
+    /// "Virtual" copy constructor (covariant return type).
+    virtual ChLineBezier* Clone() const override { return new ChLineBezier(*this); }
 
     virtual GeometryType GetClassType() const override { return LINE_BEZIER; }
 
@@ -47,9 +47,7 @@ class ChApi ChLineBezier : public ChLine {
 
     /// Curve evaluation (only parU is used, in 0..1 range)
     virtual void Evaluate(ChVector<>& pos,
-                          const double parU,
-                          const double parV = 0.,
-                          const double parW = 0.) const override;
+                          const double parU) const override;
 
     virtual void ArchiveOUT(ChArchiveOut& marchive) override {
         // version number

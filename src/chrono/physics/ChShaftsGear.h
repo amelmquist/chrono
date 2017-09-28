@@ -2,7 +2,7 @@
 // PROJECT CHRONO - http://projectchrono.org
 //
 // Copyright (c) 2014 projectchrono.org
-// All right reserved.
+// All rights reserved.
 //
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file at the top level of the distribution and at
@@ -23,19 +23,19 @@ namespace chrono {
 /// Class for defining a 'transmission ratio' (a 1D gear) between two one-degree-of-freedom
 /// parts; i.e., shafts that can be used to build 1D models of powertrains. This is more
 /// efficient than simulating power trains modeled with full 3D ChBody objects.
-/// Note that this really simple constraint does not provide a way to trasmit a reaction
+/// Note that this really simple constraint does not provide a way to transmit a reaction
 /// force to the truss, if this is needed, just use the ChShaftsPlanetary with a fixed
 /// carrier shaft, or the ChShaftGearbox.
 
 class ChApi ChShaftsGear : public ChShaftsCouple {
 
-    // Tag needed for class factory in archive (de)serialization:
-    CH_FACTORY_TAG(ChShaftsGear)
-
   private:
     double ratio;                       ///< transmission ratio t, as in w2=t*w1, or t=w2/w1
     double torque_react;                ///< reaction torque
     ChConstraintTwoGeneric constraint;  ///< used as an interface to the solver
+    bool avoid_phase_drift; 
+    double phase1;
+    double phase2;
 
   public:
     ChShaftsGear();
@@ -95,11 +95,22 @@ class ChApi ChShaftsGear : public ChShaftsCouple {
 
     /// Set the transmission ratio t, as in w2=t*w1, or t=w2/w1 , or  t*w1 - w2 = 0.
     /// For example, t=1 for a rigid joint; t=-0.5 for representing
-    /// a couple of spur gears with teeths z1=20 & z2=40; t=0.1 for
-    /// a gear with inner teeths (or epicycloidal reducer), etc.
+    /// a couple of spur gears with teeth z1=20 & z2=40; t=0.1 for
+    /// a gear with inner teeth (or epicycloidal reducer), etc.
     void SetTransmissionRatio(double mt) { ratio = mt; }
     /// Get the transmission ratio t, as in w2=t*w1, or t=w2/w1
     double GetTransmissionRatio() const { return ratio; }
+
+
+    /// Set if the constraint must avoid phase drift. If true, phasing is always 
+    /// tracked and the constraint is satisfied also at the position level.
+    /// If false, microslipping can accumulate (as in friction wheels).
+    /// Default is enabled.
+    void SetAvoidPhaseDrift(bool mb) {this->avoid_phase_drift = mb;}
+
+    /// Set if the constraint is in "avoid phase drift" mode.
+    bool GetAvoidPhaseDrift() { return this->avoid_phase_drift;}
+
 
     /// Get the reaction torque exchanged between the two shafts,
     /// considered as applied to the 1st axis.

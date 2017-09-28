@@ -2,7 +2,7 @@
 // PROJECT CHRONO - http://projectchrono.org
 //
 // Copyright (c) 2014 projectchrono.org
-// All right reserved.
+// All rights reserved.
 //
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file at the top level of the distribution and at
@@ -57,7 +57,7 @@ bool ChLinePoly::Set_point(int mnum, ChVector<> mpoint) {
 // Curve evaluation.
 //
 
-void ChLinePoly::Evaluate(ChVector<>& pos, const double parU, const double parV, const double parW) const {
+void ChLinePoly::Evaluate(ChVector<>& pos, const double parU) const {
     double par = parU;
     pos = VNULL;
 

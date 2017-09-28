@@ -2,7 +2,7 @@
 // PROJECT CHRONO - http://projectchrono.org
 //
 // Copyright (c) 2014 projectchrono.org
-// All right reserved.
+// All rights reserved.
 //
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file at the top level of the distribution and at
@@ -59,6 +59,11 @@ double FEADeformableTerrain::GetHeight(double x, double y) const {
 ChVector<> FEADeformableTerrain::GetNormal(double x, double y) const {
     //// TODO
     return ChVector<>(0, 0, 1);
+}
+
+// Return the terrain coefficient of friction at the specified location
+float FEADeformableTerrain::GetCoefficientFriction(double x, double y) const {
+    return m_friction_fun ? (*m_friction_fun)(x, y) : 0.8f;
 }
 
 // Set properties of the FEA soil model
@@ -176,7 +181,7 @@ void FEADeformableTerrain::Initialize(const ChVector<>& start_point,
             jj++;
             kk = 0;
         }
-        // Define node sequence for element node0 thru node7 are corner nodes
+        // Define node sequence for element node0 through node7 are corner nodes
         // Node8 is the central curvature vector node.
         int node0 = (kk / (numDiv_x)) * (N_x) + kk % numDiv_x + jj * (N_x * N_y);
         int node1 = (kk / (numDiv_x)) * (N_x) + kk % numDiv_x + 1 + jj * (N_x * N_y);

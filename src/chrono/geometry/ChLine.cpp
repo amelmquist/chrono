@@ -2,7 +2,7 @@
 // PROJECT CHRONO - http://projectchrono.org
 //
 // Copyright (c) 2014 projectchrono.org
-// All right reserved.
+// All rights reserved.
 //
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file at the top level of the distribution and at
@@ -25,12 +25,30 @@ namespace chrono {
 namespace geometry {
 
 // Register into the object factory, to enable run-time dynamic creation and persistence
-CH_FACTORY_REGISTER(ChLine)
+//CH_FACTORY_REGISTER(ChLine)  // NO! Abstract class!
 
 ChLine::ChLine(const ChLine& source) {
     closed = source.closed;
     complexityU = source.complexityU;
 }
+
+void ChLine::Derive(ChVector<>& dir, const double parU) const {
+    double bdf = 10e-9;
+    double uA = 0, uB = 0;
+
+    if (parU > 0.5) {
+        uB = parU;
+        uA = parU - bdf;
+    } else {
+        uB = parU + bdf;
+        uA = parU;
+    }
+    ChVector<> vA, vB;
+    Evaluate(vA, uA);
+    Evaluate(vB, uB);
+    dir = (vB - vA) * (1 / bdf);
+}
+
 
 bool ChLine::FindNearestLinePoint(ChVector<>& point, double& resU, double approxU, double tol) const {
     double mu;

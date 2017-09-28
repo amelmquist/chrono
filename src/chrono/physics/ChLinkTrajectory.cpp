@@ -2,7 +2,7 @@
 // PROJECT CHRONO - http://projectchrono.org
 //
 // Copyright (c) 2014 projectchrono.org
-// All right reserved.
+// All rights reserved.
 //
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file at the top level of the distribution and at
@@ -41,7 +41,7 @@ ChLinkTrajectory::ChLinkTrajectory() : modulo_s(false) {
 
 ChLinkTrajectory::ChLinkTrajectory(const ChLinkTrajectory& other) : ChLinkLock(other) {
     space_fx = std::shared_ptr<ChFunction>(other.space_fx->Clone());            // deep copy
-    trajectory_line = std::shared_ptr<ChLine>(other.trajectory_line->Clone());  // deep copy
+    trajectory_line = std::shared_ptr<ChLine>((ChLine*)other.trajectory_line->Clone());  // deep copy
 }
 
 void ChLinkTrajectory::Set_space_fx(std::shared_ptr<ChFunction> m_funct) {

@@ -2,7 +2,7 @@
 // PROJECT CHRONO - http://projectchrono.org
 //
 // Copyright (c) 2014 projectchrono.org
-// All right reserved.
+// All rights reserved.
 //
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file at the top level of the distribution and at
@@ -56,10 +56,10 @@ using namespace chrono::vehicle;
 // =============================================================================
 
 // JSON file for vehicle model
-// std::string vehicle_file("hmmwv/vehicle/HMMWV_Vehicle.json");
+std::string vehicle_file("hmmwv/vehicle/HMMWV_Vehicle.json");
 // std::string vehicle_file("hmmwv/vehicle/HMMWV_Vehicle_simple_lugged.json");
 // std::string vehicle_file("hmmwv/vehicle/HMMWV_Vehicle_4WD.json");
-std::string vehicle_file("generic/vehicle/Vehicle_DoubleWishbones.json");
+// std::string vehicle_file("generic/vehicle/Vehicle_DoubleWishbones.json");
 // std::string vehicle_file("generic/vehicle/Vehicle_DoubleWishbones_ARB.json");
 // std::string vehicle_file("MAN_5t/vehicle/MAN_5t_Vehicle_4WD.json");
 // std::string vehicle_file("generic/vehicle/Vehicle_MultiLinks.json");
@@ -114,12 +114,14 @@ ChVector<> trackPoint(0.0, 0.0, 1.75);
 double tend = 20.0;
 
 // Output directories (Povray only)
-const std::string out_dir = "../VEHICLE";
+const std::string out_dir = GetChronoOutputPath() + "WHEELED_JSON";
 const std::string pov_dir = out_dir + "/POVRAY";
 
 // =============================================================================
 
 int main(int argc, char* argv[]) {
+    GetLog() << "Copyright (c) 2017 projectchrono.org\nChrono version: " << CHRONO_VERSION << "\n\n";
+
     // --------------------------
     // Create the various modules
     // --------------------------

@@ -2,7 +2,7 @@
 // PROJECT CHRONO - http://projectchrono.org
 //
 // Copyright (c) 2014 projectchrono.org
-// All right reserved.
+// All rights reserved.
 //
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file at the top level of the distribution and at
@@ -24,11 +24,10 @@ namespace chrono {
 namespace geometry {
 
 /// Base class for all geometric objects representing lines in 3D space.
+/// This is the base for all U-parametric object, implementing Evaluate() 
+/// that returns a point as a function of the U parameter. 
 
 class ChApi ChLine : public ChGeometry {
-
-    // Tag needed for class factory in archive (de)serialization:
-    CH_FACTORY_TAG(ChLine)
 
   protected:
     bool closed;
@@ -40,12 +39,27 @@ class ChApi ChLine : public ChGeometry {
     virtual ~ChLine() {}
 
     /// "Virtual" copy constructor (covariant return type).
-    virtual ChLine* Clone() const override { return new ChLine(*this); }
+    //virtual ChLine* Clone() const override { };
 
     /// Get the class type as unique numerical ID (faster
     /// than using ChronoRTTI mechanism).
     /// Each inherited class must return an unique ID.
     virtual GeometryType GetClassType() const override { return LINE; }
+
+    /// Evaluates a point on the line, given parametric coordinate U.
+    /// Parameter U always work in 0..1 range.
+    /// Computed value goes into the 'pos' reference.
+    /// It must be implemented by inherited classes.
+    virtual void Evaluate(ChVector<>& pos, const double parU) const = 0;
+
+    /// Evaluates a tangent versor, given parametric coordinate.
+    /// Parameter U always work in 0..1 range.
+    /// Computed value goes into the 'pos' reference.
+    /// It could be overridden by inherited classes if a precise solution is
+    /// known (otherwise it defaults to numerical BDF using the Evaluate()
+    /// function).
+    virtual void Derive(ChVector<>& dir, const double parU) const;
+
 
     /// Tell if the curve is closed
     virtual bool Get_closed() const { return closed; }
@@ -68,7 +82,7 @@ class ChApi ChLine : public ChGeometry {
     /// By default, evaluates line at U=0.
     virtual ChVector<> GetEndA() const {
         ChVector<> pos;
-        Evaluate(pos, 0, 0, 0);
+        Evaluate(pos, 0);
         return pos;
     }
 
@@ -76,19 +90,19 @@ class ChApi ChLine : public ChGeometry {
     /// By default, evaluates line at U=1.
     virtual ChVector<> GetEndB() const {
         ChVector<> pos;
-        Evaluate(pos, 1, 0, 0);
+        Evaluate(pos, 1);
         return pos;
     }
 
     /// Returns adimensional information on "how much" this curve is similar to another
-    /// in its overall shape (doesnot matter parametrization or start point). Try with 20 samples.
+    /// in its overall shape (does not matter parametrization or start point). Try with 20 samples.
     /// The return value is somewhat the "average distance between the two curves".
     /// Note that the result is affected by "weight" of curves. If it chnges from default 1.0, the
-    /// distance extimation is higher/lower (ex: if a curve defines low 'weight' in its central segment,
+    /// distance estimation is higher/lower (ex: if a curve defines low 'weight' in its central segment,
     /// its CurveCurveDistance from another segment is not much affected by errors near the central segment).
     double CurveCurveDist(ChLine* compline, int samples) const;
 
-    /// Same as before, but returns "how near" is complinesegm to
+    /// Same as before, but returns "how near" is \a complinesegm to
     /// whatever segment of this line (does not matter the percentual of line).
     /// Again, this is affected by "weight" of curves. If weight changes along curves ->'weighted' distance
     double CurveSegmentDist(ChLine* complinesegm, int samples) const;

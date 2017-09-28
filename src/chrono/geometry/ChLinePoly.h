@@ -2,7 +2,7 @@
 // PROJECT CHRONO - http://projectchrono.org
 //
 // Copyright (c) 2014 projectchrono.org
-// All right reserved.
+// All rights reserved.
 //
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file at the top level of the distribution and at
@@ -26,9 +26,6 @@ namespace geometry {
 
 class ChApi ChLinePoly : public ChLine {
 
-    // Tag needed for class factory in archive (de)serialization:
-    CH_FACTORY_TAG(ChLinePoly)
-
   private:
     std::vector<ChVector<> > points;  ///< control points
     int degree;                       ///< polynomial degree
@@ -48,9 +45,7 @@ class ChApi ChLinePoly : public ChLine {
 
     /// Curve evaluation (only parU is used, in 0..1 range)
     virtual void Evaluate(ChVector<>& pos,
-                          const double parU,
-                          const double parV = 0.,
-                          const double parW = 0.) const override;
+                          const double parU) const override;
 
     /// Returns curve length. sampling does not matter
     virtual double Length(int sampling) const override;
