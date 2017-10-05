@@ -29,7 +29,6 @@
 ChGPS::ChGPS (std::shared_ptr<chrono::ChBody> parent, double updateRate, bool visualize)
 : ChSensor(parent,updateRate,visualize){
 
-
 }
 ChGPS::~ChGPS(){
 
@@ -37,8 +36,8 @@ ChGPS::~ChGPS(){
 
 /// Initialize the ChGPS
 /// pass in: vertMinAngle, vertMaxAngle, vertSamples, horzMinAngle, horzMaxAngle,horzSamples,minRange,maxRange
-void ChGPS::Initialize(chrono::ChCoordsys<double> offsetPose){
-
+void ChGPS::Initialize(chrono::ChCoordsys<> offsetPose, chrono::ChVector<> originGPS){
+	m_originGPS = originGPS;
 }
 
 void ChGPS::Update(){
@@ -49,7 +48,37 @@ void ChGPS::Update(){
 	}
 }
 
-chrono::ChVector<double> ChGPS::GetData(){
+chrono::ChVector<> ChGPS::GetData(){
+	return toGPSCoords(currPos);
+}
 
-	return currPos;
+chrono::ChVector<> ChGPS::toGPSCoords(chrono::ChVector<> cart){
+	//convert from cartesian to gps coordinates assuming a sphere
+	//TODO: something is wrong in this formula, try reversing the haversine formula (bookmarked) - Asher
+	double lat = (cart.y() / earthRadius) *180.0 / chrono::CH_C_PI + m_originGPS.y();
+	double lon = (cart.x() / (earthRadius*cos(lat*chrono::CH_C_PI/180.0))) *180.0 / chrono::CH_C_PI + m_originGPS.x();
+	double alt = cart.z() + m_originGPS.z();
+
+	//sanitize the new gps coordinates
+	if(lat < -90.0){
+		//NOT A GOOD APPROXIMATION NEAR THE POLES ANYWAY
+	}
+	else if(lat > 90){
+		//NOT A GOOD APPROXIMATION NEAR THE POLES ANYWAY
+	}
+
+	if(lon < -180.0){
+		lon = lon + 360.0;
+	}
+	else if(lon > 180.0){
+		lon = lon - 360.0;
+	}
+
+
+
+
+
+
+
+	return chrono::ChVector<>({lon, lat, alt});
 }

@@ -38,8 +38,8 @@ public:
 	/// Destructor
 	~ChGPS();
 
-	///Initialize the ChGPS
-	void Initialize(chrono::ChCoordsys<double> offsetPose);
+	///Initialize the ChGPS - Simulation assumed to be x east-west, y north-south, z normal to surface
+	void Initialize(chrono::ChCoordsys<> offsetPose, chrono::ChVector<> originGPS);
 			/***TEMPORART PARENT OBJECT***/
 			//,chrono::ChCoordsys<double> parentPose);
 
@@ -47,7 +47,11 @@ public:
 	void Update();
 	chrono::ChVector<double> GetData();
 private:
-	chrono::ChVector<double> currPos;
+	chrono::ChVector<> toGPSCoords(chrono::ChVector<> cart);
+	chrono::ChVector<> currPos;
+	chrono::ChVector<> m_originGPS;
+	//const double earthRadius = 6371000.6;	//using the authalic radius of the earth
+	const double earthRadius = 6371000.0;	//using the authalic radius of the earth
 };
 
 #endif
