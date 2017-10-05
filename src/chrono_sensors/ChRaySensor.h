@@ -38,6 +38,9 @@
  *
  */
 
+#ifndef CHRAYSENSOR_H
+#define CHRAYSENSOR_H
+
 #include "ChRayShape.h"
 #include "ChSensor.h"
 
@@ -94,18 +97,4 @@ private: double minRange = -1;
 private: double maxRange = -1;
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#endif

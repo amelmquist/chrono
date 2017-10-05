@@ -33,6 +33,9 @@
  *
  */
 
+#ifndef CHRAYSHAPE_H
+#define CHRAYSHAPE_H
+
 #include "chrono/physics/ChSystem.h"
 #include "chrono/core/ChCoordsys.h"
 #include "chrono/core/ChVector.h"
@@ -102,11 +105,4 @@ private: std::shared_ptr<chrono::ChBodyEasySphere> rayStart;
 
 };
 
-
-
-
-
-
-
-
-
+#endif
