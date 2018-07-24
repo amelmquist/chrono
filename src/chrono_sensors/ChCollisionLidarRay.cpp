@@ -16,29 +16,29 @@
 // =============================================================================
 
 
-#include "ChRayShape.h"
+#include "ChCollisionLidar.h"
 
-#include "chrono/physics/ChSystem.h"
-#include "chrono/assets/ChTexture.h"
+// #include "chrono/physics/ChSystem.h"
+// #include "chrono/assets/ChTexture.h"
 #include "chrono/assets/ChColorAsset.h"
 
 
 
 
-ChRayShape::ChRayShape(std::shared_ptr<chrono::ChBody> parent, bool visualize){
+ChCollisionLidarRay::ChCollisionLidarRay(std::shared_ptr<chrono::ChBody> parent, bool visualize){
 	this->parent = parent;	//save reference to the ChSystem
 	this->visualize = visualize;
 	//this is set to -1 for now since they have not been used
 	this->contactLen = -1;
 }
 
-ChRayShape::~ChRayShape(){
+ChCollisionLidarRay::~ChCollisionLidarRay(){
 
 }
 
 // update the ray collision
 // this checks the ray and sets the appropriate ray length and hit object name
-void ChRayShape::Update(bool updateCollision){
+void ChCollisionLidarRay::Update(bool updateCollision){
 
 	this->globalStartPos = this->parent->GetPos() + this->parent->GetRot().Rotate(relativeStartPos);
 	this->globalEndPos = this->parent->GetPos() + this->parent->GetRot().Rotate(relativeEndPos);
@@ -57,18 +57,8 @@ void ChRayShape::Update(bool updateCollision){
 	}
 }
 
-///This finds the intersection of the ray and the colliding object
-void ChRayShape::GetIntersection(double &dist, std::string &entity){
-	//see if the ray collides with anything
-	this->parent->GetSystem()->GetCollisionSystem()->RayHit(this->globalStartPos, this->globalEndPos, this->rayCollision);
-	if(rayCollision.hit){
-		dist = (rayCollision.abs_hitPoint-this->globalStartPos).Length();
-		entity = rayCollision.hitModel->GetPhysicsItem()->GetNameString();
-	}
-}
-
 // set the start and end point of the ray
-void ChRayShape::SetPoints(const chrono::ChVector<double> &posStart,
+void ChCollisionLidarRay::SetPoints(const chrono::ChVector<double> &posStart,
 		const chrono::ChVector<double> &posEnd){
 	//set the global start and end points
 	this->relativeStartPos = posStart;
@@ -101,7 +91,7 @@ void ChRayShape::SetPoints(const chrono::ChVector<double> &posStart,
 }
 
 // set the length of the ray
-void ChRayShape::SetLength(double len){
+void ChCollisionLidarRay::SetLength(double len){
 	//set the length to the contact
 	this->contactLen = len;
 
@@ -113,7 +103,7 @@ void ChRayShape::SetLength(double len){
 }
 
 // returns the length of the ray
-double ChRayShape::GetLength() const{
+double ChCollisionLidarRay::GetLength() const{
 	//return the length to contact
 	return this->contactLen;
 

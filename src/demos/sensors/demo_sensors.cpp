@@ -21,11 +21,9 @@
 #include "chrono/assets/ChColorAsset.h"
 #include "chrono_irrlicht/ChIrrApp.h"
 
-//#include "ChRayShape.h"
-
 #include "chrono_sensors/ChGPS.h"
 #include "chrono_sensors/ChIMU.h"
-#include "chrono_sensors/ChRaySensor.h"
+#include "chrono_sensors/ChCollisionLidar.h"
 
 // Use the namespace of Chrono
 
@@ -101,30 +99,6 @@ int main(int argc, char* argv[]) {
 	box->AddAsset(texture);
 
 
-
-	//===============Test out MultiRayShape linking===============
-	//auto rayshape = std::make_shared<ChRaySensor>();
-	//rayshape->Init();
-	//rayshape->~ChRaySensor();ChRaySensor ray = new ChRaySensor();
-	//std::shared_ptr<ChRaySensor> rays = std::make_shared<ChRaySensor>(&mphysicalSystem);
-
-	//ChRaySensor *rays = new ChRaySensor(mphysicalSystem);
-	//	auto multiRayBox = std::make_shared<ChBodyEasyBox>(.1, .1, .1,  // x, y, z dimensions
-	//			3000,         // density
-	//			false,        // contact?
-	//			true          // visual?
-	//	);
-	//	multiRayBox->SetNameString("THIS BOX");
-	//	multiRayBox->SetPos(ChVector<>(2, 1, 0));
-	//	multiRayBox->SetRot(Q_from_AngY(3.14)*Q_from_AngX(.707));
-	//	multiRayBox->SetBodyFixed(true);
-	//	//box->SetPos_dt(ChVector<>(0, 0, 0));
-	//
-	//	mphysicalSystem.Add(multiRayBox);
-	//	auto colorMultiRayBox = std::make_shared<ChColorAsset>();
-	//	colorMultiRayBox->SetColor(ChColor(0.4f, 0.2f, 0.2f));
-	//	multiRayBox->AddAsset(colorMultiRayBox);
-
 	auto lidarBox = std::make_shared<ChBodyEasyBox>(.1, .1, .1,  // x, y, z dimensions
 			3000,         // density
 			true,        // no contact geometry
@@ -148,12 +122,12 @@ int main(int argc, char* argv[]) {
 	//mphysicalSystem.Add(lidar);
 
 
-	std::shared_ptr<ChRaySensor> lidarSensor = std::make_shared<ChRaySensor>(lidarBox, 60, true);
+	std::shared_ptr<ChCollisionLidar> lidarSensor = std::make_shared<ChCollisionLidar>(lidarBox, 60, true);
 	//lidarSensor->Initialize(1, 100, 0, 0, -3.14, 3.08, .01, 25); //old version of init
 	lidarSensor->Initialize(chrono::ChCoordsys<double>(
 			chrono::ChVector<double>({0,0,0}),	//offset x,y,z
-			chrono::ChQuaternion<double>(Q_from_NasaAngles({0,0,0}))), //offset yaw,roll,pitch
-			100, 100, -1.57, 1.57, -3.14, 3.14, .2, 3);
+			chrono::ChQuaternion<double>(Q_from_NasaAngles({-1.57,1.57,0}))), //offset yaw,roll,pitch
+			10, 100, -.5, .5, -1.57, 1.57, .2, 3);
 	//offset pose, z samples, y samples, z min angle, z max angle, min distance, max distance
 
 	auto gpsBox = std::make_shared<ChBodyEasyBox>(.1, .1, .1,  // x, y, z dimensions
@@ -224,12 +198,14 @@ int main(int argc, char* argv[]) {
 		lidarSensor->Update();
 		gpsSensor->Update();
 
+		std::cout<<"Range: "<<lidarSensor->GetRange(500)<<std::endl;
+
 		//print out GPS data
-		std::cout<<"GPS: "<<gpsSensor->GetData().x()<<"|"<<gpsSensor->GetData().y()
-			<<"|"<<gpsSensor->GetData().z()<<std::endl;
-		//imuSensor->Update();
-		double dist = sqrt(gpsBox->GetPos().x()*gpsBox->GetPos().x() + gpsBox->GetPos().y()*gpsBox->GetPos().y());
-		std::cout<<std::setprecision(16)<<"Distance to origin: "<<dist<<std::endl;
+		// std::cout<<"GPS: "<<gpsSensor->GetData().x()<<"|"<<gpsSensor->GetData().y()
+		// 	<<"|"<<gpsSensor->GetData().z()<<std::endl;
+		// //imuSensor->Update();
+		// double dist = sqrt(gpsBox->GetPos().x()*gpsBox->GetPos().x() + gpsBox->GetPos().y()*gpsBox->GetPos().y());
+		// std::cout<<std::setprecision(16)<<"Distance to origin: "<<dist<<std::endl;
 
 		//std::cout<<gpsSensor->GetData().x<<", "<<gpsSensor->GetData().y<<", "<<gpsSensor->GetData().z<<std::endl;
 		//std::cout<<mphysicalSystem.GetChTime()<<std::endl;

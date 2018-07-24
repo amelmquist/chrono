@@ -25,8 +25,6 @@
 
 class ChSensor
 {
-	/// \brief Constructor.
-	/// \param[in] _cat Category of the sensor
 public: ChSensor(std::shared_ptr<chrono::ChBody> parent, double updateRate, bool visualize);
 		~ChSensor();
 		enum noiseType {NONE, GAUSSIAN};
@@ -34,9 +32,7 @@ public: ChSensor(std::shared_ptr<chrono::ChBody> parent, double updateRate, bool
 
 
 protected:
-		//noise model
-
-		noiseType m_noiseType = NONE;
+		noiseType m_noiseType = NONE;	//noise model
 		double m_mean = 0;
 		double m_stdev = 0;
 

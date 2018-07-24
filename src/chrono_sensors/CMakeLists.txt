@@ -29,12 +29,12 @@ install(FILES "${PROJECT_BINARY_DIR}/chrono_sensors/ChConfigSensors.h"
 
 set(CS_BASE_FILES
 		ChApiSensors.h
-    ChSensor.h
+        ChSensor.h
 		ChSensor.cpp
-		ChRaySensor.h
-		ChRaySensor.cpp
-		ChRayShape.h
-		ChRayShape.cpp
+		ChCollisionLidar.h
+		ChCollisionLidar.cpp
+		ChCollisionLidarRay.h
+		ChCollisionLidarRay.cpp
 		ChGPS.h
 		ChGPS.cpp
 		ChIMU.h

@@ -16,19 +16,19 @@
 // =============================================================================
 
 
-#ifndef CHRAYSENSOR_H
-#define CHRAYSENSOR_H
+#ifndef CHCOLLISIONLIDAR_H
+#define CHCOLLISIONLIDAR_H
 
-#include "ChRayShape.h"
 #include "ChSensor.h"
+#include "ChCollisionLidarRay.h"
 
-class ChRaySensor : public ChSensor{
+class ChCollisionLidar : public ChSensor{
 public:
 	// Constructor
-	ChRaySensor(std::shared_ptr<chrono::ChBody> parent, double updateRate, bool visualize);
+	ChCollisionLidar(std::shared_ptr<chrono::ChBody> parent, double updateRate, bool visualize);
 
 	// Destructor
-	~ChRaySensor();
+	~ChCollisionLidar();
 
 	//Initialize the ChRaySensor
 	void Initialize(chrono::ChCoordsys<double> offsetPose,
@@ -40,7 +40,7 @@ public:
 	// Update the rays
 	void UpdateRays();
 
-	double GetRange(unsigned int _index);
+	double GetRange(unsigned int index);
 	std::vector<double> Ranges();
 
 	void Update();
@@ -48,7 +48,7 @@ public:
 private:
 	void AddRay(const chrono::ChVector<double> &start, const chrono::ChVector<double> &end);
 
-	std::vector<std::shared_ptr<ChRayShape>> rays;
+	std::vector<std::shared_ptr<ChCollisionLidarRay>> rays;
 
 	chrono::ChCoordsys<double> offsetPose;
 

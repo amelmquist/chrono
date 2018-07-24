@@ -16,21 +16,21 @@
 // =============================================================================
 
 
-#include "ChRaySensor.h"
+#include "ChCollisionLidar.h"
 
 using namespace chrono;
 
 // Constructor for a ChRaySensor
-ChRaySensor::ChRaySensor (std::shared_ptr<ChBody> parent, double updateRate, bool visualize)
-: ChSensor(parent,updateRate,visualize){
+ChCollisionLidar::ChCollisionLidar (std::shared_ptr<ChBody> parent, double updateRate, bool visualize)
+	:ChSensor(parent,updateRate,visualize){
 
 }
-ChRaySensor::~ChRaySensor(){
+ChCollisionLidar::~ChCollisionLidar(){
 	this->rays.clear();
 }
 
 // Initialize the ChRaySensor
-void ChRaySensor::Initialize(chrono::ChCoordsys<double> offsetPose,
+void ChCollisionLidar::Initialize(chrono::ChCoordsys<double> offsetPose,
 		int aboutYSamples, int aboutZSamples,
 		double aboutYMinAngle, double aboutYMaxAngle,
 		double aboutZMinAngle, double aboutZMaxAngle,
@@ -65,55 +65,57 @@ void ChRaySensor::Initialize(chrono::ChCoordsys<double> offsetPose,
 			start = (axis * minRange) + offsetPose.pos;
 			end = (axis * maxRange) + offsetPose.pos;
 
-			this->AddRay(start,end);
+			AddRay(start,end);
 		}
 	}
 }
 
-void ChRaySensor::UpdateRays(){
+void ChCollisionLidar::UpdateRays(){
 
 }
 
-void ChRaySensor::AddRay(const chrono::ChVector<double> &_start,
-		const chrono::ChVector<double> &_end){
-	std::shared_ptr<ChRayShape> ray = std::make_shared<ChRayShape>(this->parent, visualize);
+void ChCollisionLidar::AddRay(const chrono::ChVector<double> &start,
+		const chrono::ChVector<double> &end){
+	std::shared_ptr<ChCollisionLidarRay> ray = std::make_shared<ChCollisionLidarRay>(parent, visualize);
 
-	ray->SetPoints(_start, _end);
-	this->rays.push_back(ray);
+	ray->SetPoints(start, end);
+	rays.push_back(ray);
 
 }
 
-double ChRaySensor::GetRange(unsigned int _index){
-	if(_index >= this->rays.size()){
+double ChCollisionLidar::GetRange(unsigned int index){
+	if(index >= rays.size()){
 		return -1;
 	}
 	//add min range because we measured from min range
-	return this->minRange + this->rays[_index]->GetLength();
+	return minRange + rays[index]->GetLength();
 
 }
 
-std::vector<double> ChRaySensor::Ranges(){
+std::vector<double> ChCollisionLidar::Ranges(){
 	std::vector<double> ranges = std::vector<double>();
-	for(int i=0; i<this->rays.size(); i++){
-		ranges.push_back(this->minRange + rays[i]->GetLength());
+	for(int i=0; i<rays.size(); i++){
+		ranges.push_back(minRange + rays[i]->GetLength());
 	}
 	return ranges;
 }
 
-void ChRaySensor::Update(){
+void ChCollisionLidar::Update(){
 
-	double fullRange = this->maxRange - this->minRange;
+	double fullRange = maxRange - minRange;
 
 	bool updateCollisions = false;
-	if(this->parent->GetChTime()>=timeLastUpdated + 1.0/updateRate){
+	if(parent->GetChTime()>=timeLastUpdated + 1.0/updateRate){
 		updateCollisions = true;
-		timeLastUpdated = this->parent->GetChTime();
-		for(unsigned int i = 0; i<this->rays.size(); i++){
-			this->rays[i]->SetLength(fullRange);
+		timeLastUpdated = parent->GetChTime();
+		for(int i = 0; i<rays.size(); i++){
+			rays[i]->SetLength(fullRange);
 		}
 	}
-	std::vector<std::shared_ptr<ChRayShape>>::iterator iter;
-	for(iter = this->rays.begin(); iter != this->rays.end(); ++iter){
-		(*iter)->Update(updateCollisions);
+	// need to update the rays regardless so that they move with the entity
+	// they are attached to
+	for(int i=0; i<rays.size(); i++){
+		rays[i]->Update(updateCollisions);
 	}
+
 }
