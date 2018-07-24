@@ -36,10 +36,10 @@ protected:
 		double m_mean = 0;
 		double m_stdev = 0;
 
-		double updateRate = 0;
-		double timeLastUpdated = 0;
-		std::shared_ptr<chrono::ChBody> parent;
-		bool visualize;
+		double m_updateRate = 0;
+		double m_timeLastUpdated = 0;
+		std::shared_ptr<chrono::ChBody> m_parent;
+		bool m_visualize;
 
 };
 

@@ -26,7 +26,7 @@ ChCollisionLidar::ChCollisionLidar (std::shared_ptr<ChBody> parent, double updat
 
 }
 ChCollisionLidar::~ChCollisionLidar(){
-	this->rays.clear();
+	m_rays.clear();
 }
 
 // Initialize the ChRaySensor
@@ -36,8 +36,8 @@ void ChCollisionLidar::Initialize(chrono::ChCoordsys<double> offsetPose,
 		double aboutZMinAngle, double aboutZMaxAngle,
 		double minRange, double maxRange){
 
-	this->minRange = minRange;
-	this->maxRange = maxRange;
+	m_minRange = minRange;
+	m_maxRange = maxRange;
 
 	if(aboutZSamples < 1) aboutZSamples = 1;
 	if(aboutYSamples < 1) aboutYSamples = 1;
@@ -76,46 +76,49 @@ void ChCollisionLidar::UpdateRays(){
 
 void ChCollisionLidar::AddRay(const chrono::ChVector<double> &start,
 		const chrono::ChVector<double> &end){
-	std::shared_ptr<ChCollisionLidarRay> ray = std::make_shared<ChCollisionLidarRay>(parent, visualize);
+	std::shared_ptr<ChCollisionLidarRay> ray = std::make_shared<ChCollisionLidarRay>(m_parent, m_visualize);
 
 	ray->SetPoints(start, end);
-	rays.push_back(ray);
+	m_rays.push_back(ray);
 
 }
 
 double ChCollisionLidar::GetRange(unsigned int index){
-	if(index >= rays.size()){
+	if(index >= m_rays.size()){
 		return -1;
 	}
 	//add min range because we measured from min range
-	return minRange + rays[index]->GetLength();
+	return m_minRange + m_rays[index]->GetLength();
 
 }
 
 std::vector<double> ChCollisionLidar::Ranges(){
 	std::vector<double> ranges = std::vector<double>();
-	for(int i=0; i<rays.size(); i++){
-		ranges.push_back(minRange + rays[i]->GetLength());
+	for(int i=0; i<m_rays.size(); i++){
+		ranges.push_back(m_minRange + m_rays[i]->GetLength());
 	}
 	return ranges;
 }
 
 void ChCollisionLidar::Update(){
 
-	double fullRange = maxRange - minRange;
+	double fullRange = m_maxRange - m_minRange;
 
 	bool updateCollisions = false;
-	if(parent->GetChTime()>=timeLastUpdated + 1.0/updateRate){
+	if(m_parent->GetChTime()>=m_timeLastUpdated + 1.0/m_updateRate){
 		updateCollisions = true;
-		timeLastUpdated = parent->GetChTime();
-		for(int i = 0; i<rays.size(); i++){
-			rays[i]->SetLength(fullRange);
+		m_timeLastUpdated = m_parent->GetChTime();
+		for(int i = 0; i<m_rays.size(); i++){
+			m_rays[i]->SetLength(fullRange);
+			if(!m_visualize) m_rays[i]->Update(updateCollisions);
 		}
 	}
 	// need to update the rays regardless so that they move with the entity
 	// they are attached to
-	for(int i=0; i<rays.size(); i++){
-		rays[i]->Update(updateCollisions);
+	if(m_visualize){
+		for(int i=0; i<m_rays.size(); i++){
+			m_rays[i]->Update(updateCollisions);
+		}
 	}
 
 }

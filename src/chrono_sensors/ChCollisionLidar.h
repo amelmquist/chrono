@@ -48,12 +48,12 @@ public:
 private:
 	void AddRay(const chrono::ChVector<double> &start, const chrono::ChVector<double> &end);
 
-	std::vector<std::shared_ptr<ChCollisionLidarRay>> rays;
+	std::vector<std::shared_ptr<ChCollisionLidarRay>> m_rays;
 
-	chrono::ChCoordsys<double> offsetPose;
+	// chrono::ChCoordsys<double> m_offsetPose;
 
-	double minRange = -1;
-	double maxRange = -1;
+	double m_minRange = -1;
+	double m_maxRange = -1;
 };
 
 #endif

@@ -35,9 +35,9 @@ void ChGPS::Initialize(chrono::ChCoordsys<> offsetPose, chrono::ChVector<> origi
 
 void ChGPS::Update(){
 //UPDATE THE GPS IF IT HAS BEEN ENOUGH TIME SINCE PREVIOUS UPDATE
-	if(this->parent->GetChTime()>=timeLastUpdated + 1.0/updateRate){
-		currPos = this->parent->GetPos();
-		timeLastUpdated = this->parent->GetChTime();
+	if(m_parent->GetChTime()>=m_timeLastUpdated + 1.0/m_updateRate){
+		currPos = m_parent->GetPos();
+		m_timeLastUpdated = m_parent->GetChTime();
 	}
 }
 

@@ -38,11 +38,11 @@ void ChIMU::Initialize(chrono::ChCoordsys<double> offsetPose){
 
 void ChIMU::Update(){
 	//UPDATE THE IMU IF IT HAS BEEN ENOUGH TIME SINCE PREVIOUS UPDATE
-	if(this->parent->GetChTime()>=timeLastUpdated + 1.0/updateRate){
-		currLinAccel = this->parent->GetPos_dtdt();
-		currAngAccel = this->parent->GetWacc_loc();
-		currOrientation = this->parent->GetRot().Q_to_Euler123();
-		timeLastUpdated = this->parent->GetChTime();
+	if(m_parent->GetChTime()>=m_timeLastUpdated + 1.0/m_updateRate){
+		currLinAccel = m_parent->GetPos_dtdt();
+		currAngAccel = m_parent->GetWacc_loc();
+		currOrientation = m_parent->GetRot().Q_to_Euler123();
+		m_timeLastUpdated = m_parent->GetChTime();
 		AddNoise();
 	}
 }

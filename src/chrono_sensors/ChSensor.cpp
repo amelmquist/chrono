@@ -20,9 +20,9 @@
 
 
 ChSensor::ChSensor(std::shared_ptr<chrono::ChBody> parent, double updateRate, bool visualize){
-	this->updateRate = updateRate;
-	this->parent = parent;
-	this->visualize = visualize;
+	m_updateRate = updateRate;
+	m_parent = parent;
+	m_visualize = visualize;
 }
 ChSensor::~ChSensor(){
 }
