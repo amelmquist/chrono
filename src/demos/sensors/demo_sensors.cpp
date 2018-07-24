@@ -162,7 +162,7 @@ int main(int argc, char* argv[]) {
 			true          // enable visualization geometry
 	);
 	gpsBox->SetNameString("GPS BOX");
-	gpsBox->SetPos(ChVector<>(0, 2, 0));
+	gpsBox->SetPos(ChVector<>(0, 0, 0));
 	gpsBox->SetRot(Q_from_AngY(3.14/2.0));
 	gpsBox->SetBodyFixed(true);
 
@@ -172,10 +172,11 @@ int main(int argc, char* argv[]) {
 
 	gpsBox->AddAsset(texture1);
 
-	std::shared_ptr<ChGPS> gpsSensor = std::make_shared<ChGPS>(gpsBox, 1, true);
+	std::shared_ptr<ChGPS> gpsSensor = std::make_shared<ChGPS>(gpsBox, 30, true);
 	gpsSensor->Initialize(chrono::ChCoordsys<double>(
 				chrono::ChVector<double>({0,0,0}),	//offset x,y,z
-				chrono::ChQuaternion<double>(Q_from_NasaAngles({0,0,0})))); //offset yaw,roll,pitch
+				chrono::ChQuaternion<double>(Q_from_NasaAngles({0,0,0}))), //offset yaw,roll,pitch
+				{20.0, -10.0, 0.0}); //reference to origin of simulation given as (long,lat,alt)
 
 
 
@@ -213,7 +214,7 @@ int main(int argc, char* argv[]) {
 
 		//std::cout<<"Distance: "<<(box->GetPos()-ChVector<double>(2,1,0)).Length() - 1<<std::endl;
 		//lidarBox->SetRot(lidarBox->GetRot()*Q_from_AngY(.01));
-		//gpsBox->SetPos(gpsBox->GetPos() + chrono::ChVector<>(0.3,0.2,0.1));
+		gpsBox->SetPos(gpsBox->GetPos() + chrono::ChVector<>(0.2,0.2,0.0));
 
 		//lidar->SetRot(lidar->GetRot()*Q_from_AngX(.01));
 
@@ -222,7 +223,13 @@ int main(int argc, char* argv[]) {
 
 		lidarSensor->Update();
 		gpsSensor->Update();
+
+		//print out GPS data
+		std::cout<<"GPS: "<<gpsSensor->GetData().x()<<"|"<<gpsSensor->GetData().y()
+			<<"|"<<gpsSensor->GetData().z()<<std::endl;
 		//imuSensor->Update();
+		double dist = sqrt(gpsBox->GetPos().x()*gpsBox->GetPos().x() + gpsBox->GetPos().y()*gpsBox->GetPos().y());
+		std::cout<<std::setprecision(16)<<"Distance to origin: "<<dist<<std::endl;
 
 		//std::cout<<gpsSensor->GetData().x<<", "<<gpsSensor->GetData().y<<", "<<gpsSensor->GetData().z<<std::endl;
 		//std::cout<<mphysicalSystem.GetChTime()<<std::endl;
