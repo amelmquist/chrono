@@ -1,31 +1,24 @@
-//
+// =============================================================================
 // PROJECT CHRONO - http://projectchrono.org
 //
-// Copyright (c) 2013 Project Chrono
+// Copyright (c) 2014 projectchrono.org
 // All rights reserved.
 //
-//Author: Asher Elmquist
+// Use of this source code is governed by a BSD-style license that can be found
+// in the LICENSE file at the top level of the distribution and at
+// http://projectchrono.org/license-chrono.txt.
 //
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file at the top level of the distribution
-// and at http://projectchrono.org/license-chrono.txt.
+// =============================================================================
+// Authors: Asher Elmquist
+// =============================================================================
 //
+//
+// =============================================================================
+
 
 #include "ChGPS.h"
 
-#include <vector>
-#include <cmath>
-#include <stdio.h>
-#include <iostream>
-
-#include "chrono/physics/ChSystem.h"
-#include "chrono/physics/ChBodyEasy.h"
-#include "chrono/assets/ChTexture.h"
-#include "chrono/assets/ChColorAsset.h"
-#include "chrono/physics/ChLinkLock.h"
-
-
-/// Constructor for a ChGPS
+// Constructor for a ChGPS
 ChGPS::ChGPS (std::shared_ptr<chrono::ChBody> parent, double updateRate, bool visualize)
 : ChSensor(parent,updateRate,visualize){
 
@@ -34,8 +27,8 @@ ChGPS::~ChGPS(){
 
 }
 
-/// Initialize the ChGPS
-/// pass in: vertMinAngle, vertMaxAngle, vertSamples, horzMinAngle, horzMaxAngle,horzSamples,minRange,maxRange
+// Initialize the ChGPS
+// pass in: vertMinAngle, vertMaxAngle, vertSamples, horzMinAngle, horzMaxAngle,horzSamples,minRange,maxRange
 void ChGPS::Initialize(chrono::ChCoordsys<> offsetPose, chrono::ChVector<> originGPS){
 	m_originGPS = originGPS;
 }

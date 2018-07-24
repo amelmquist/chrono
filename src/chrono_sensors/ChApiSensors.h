@@ -16,15 +16,11 @@
 
 
 /**
-    @defgroup vehicle VEHICLE module
-    @brief Ground vehicle modeling
+    @defgroup sensors SENSOR module
+    @brief Ground sensor modeling
 
-    This module introduces template-based modeling tools
-    for creating wheeled and tracked vehicles.
+    This module introduces sensor models to generate synthetic data.
 
-    For additional information, see:
-    - the [installation guide](@ref module_vehicle_installation)
-    - the [tutorials](@ref tutorial_table_of_content_chrono_vehicle)
 */
 
 
@@ -33,7 +29,7 @@ namespace chrono {
 /// @addtogroup vehicle
 /// @{
 
-/// Namespace with classes for the VEHICLE module.
+/// Namespace with classes for the SENSOR module.
 namespace sensors {}
 
 /// @}

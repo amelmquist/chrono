@@ -1,34 +1,27 @@
-//
+// =============================================================================
 // PROJECT CHRONO - http://projectchrono.org
 //
-// Copyright (c) 2013 Project Chrono
+// Copyright (c) 2014 projectchrono.org
 // All rights reserved.
 //
-//Author: Asher Elmquist
+// Use of this source code is governed by a BSD-style license that can be found
+// in the LICENSE file at the top level of the distribution and at
+// http://projectchrono.org/license-chrono.txt.
 //
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file at the top level of the distribution
-// and at http://projectchrono.org/license-chrono.txt.
+// =============================================================================
+// Authors: Asher Elmquist
+// =============================================================================
 //
+//
+// =============================================================================
+
 
 
 #include "ChIMU.h"
 
-#include <vector>
-#include <cmath>
-#include <stdio.h>
-#include <iostream>
-
-#include "chrono/physics/ChSystem.h"
-#include "chrono/physics/ChBodyEasy.h"
-#include "chrono/assets/ChTexture.h"
-#include "chrono/assets/ChColorAsset.h"
-#include "chrono/physics/ChLinkLock.h"
-
-
-/// Constructor for a ChIMU
+// Constructor for a ChIMU
 ChIMU::ChIMU (std::shared_ptr<chrono::ChBody> parent, double updateRate, bool visualize)
-: ChSensor(parent,updateRate,visualize){
+	: ChSensor(parent,updateRate,visualize){
 
 
 }
@@ -36,8 +29,8 @@ ChIMU::~ChIMU(){
 
 }
 
-/// Initialize the ChIMU
-/// pass in: vertMinAngle, vertMaxAngle, vertSamples, horzMinAngle, horzMaxAngle,horzSamples,minRange,maxRange
+// Initialize the ChIMU
+// pass in: vertMinAngle, vertMaxAngle, vertSamples, horzMinAngle, horzMaxAngle,horzSamples,minRange,maxRange
 void ChIMU::Initialize(chrono::ChCoordsys<double> offsetPose){
 
 
@@ -47,17 +40,32 @@ void ChIMU::Update(){
 	//UPDATE THE IMU IF IT HAS BEEN ENOUGH TIME SINCE PREVIOUS UPDATE
 	if(this->parent->GetChTime()>=timeLastUpdated + 1.0/updateRate){
 		currLinAccel = this->parent->GetPos_dtdt();
-		currAngAccel = this->parent->GetRot_dtdt();
-		currOrientation = this->parent->GetRot();
+		currAngAccel = this->parent->GetWacc_loc();
+		currOrientation = this->parent->GetRot().Q_to_Euler123();
 		timeLastUpdated = this->parent->GetChTime();
+		AddNoise();
 	}
 }
 chrono::ChVector<double> ChIMU::GetLinearAcc(){
 	return currLinAccel;
 }
-chrono::ChQuaternion<double> ChIMU::GetAngularAcc(){
+chrono::ChVector<double> ChIMU::GetAngularAcc(){
 	return currAngAccel;
 }
-chrono::ChQuaternion<double> ChIMU::GetOrientation(){
+chrono::ChVector<double> ChIMU::GetOrientation(){
 	return currOrientation;
+}
+
+void ChIMU::AddNoise(){
+	switch(m_noiseType){
+		case ChSensor::NONE:
+			//std::cout<<"NO NOISE MODEL TO ADD\n";
+			break;
+		case ChSensor::GAUSSIAN:
+			//std::cout<<"GAUSSIAN NOISE MODEL TO ADD\n";
+			break;
+		default:
+			//std::cout<<"INVALID NOISE MODEL TYPE\n";
+			break;
+	}
 }

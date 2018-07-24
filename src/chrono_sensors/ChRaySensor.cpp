@@ -1,82 +1,40 @@
-//
+// =============================================================================
 // PROJECT CHRONO - http://projectchrono.org
 //
-// Copyright (c) 2013 Project Chrono
+// Copyright (c) 2014 projectchrono.org
 // All rights reserved.
 //
-//Author: Asher Elmquist
+// Use of this source code is governed by a BSD-style license that can be found
+// in the LICENSE file at the top level of the distribution and at
+// http://projectchrono.org/license-chrono.txt.
 //
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file at the top level of the distribution
-// and at http://projectchrono.org/license-chrono.txt.
+// =============================================================================
+// Authors: Asher Elmquist
+// =============================================================================
 //
+//
+// =============================================================================
 
-//************************************************************************
-//NOTICE: this file is modified from it's original source. Original source
-//		  is based on work done by Open Source Robotics Foundation
-//************************************************************************
-
-/*
- * Copyright (C) 2012-2016 Open Source Robotics Foundation
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
 
 #include "ChRaySensor.h"
 
-#include <vector>
-#include <cmath>
-#include <stdio.h>
-#include <iostream>
-
-#include "chrono/physics/ChSystem.h"
-#include "chrono/physics/ChBodyEasy.h"
-#include "chrono/assets/ChTexture.h"
-#include "chrono/assets/ChColorAsset.h"
-#include "chrono/physics/ChLinkLock.h"
-
 using namespace chrono;
 
-/// Constructor for a ChRaySensor
+// Constructor for a ChRaySensor
 ChRaySensor::ChRaySensor (std::shared_ptr<ChBody> parent, double updateRate, bool visualize)
 : ChSensor(parent,updateRate,visualize){
-	//save a reference to the ChSystem
-	//	this->parent = parent;
-	//	this->visualize = visualize;
-
-	//	this->SetDensity(.1);
-	//	this->SetMass(.1);
-	//	this->SetInertiaXX(ChVector<>(.1,.1,.1));
-	//	auto vshape = std::make_shared<ChBoxShape>();
-	//	vshape->GetBoxGeometry().SetLengths(ChVector<>(.05, .05, .05));
-	//	this->AddAsset(vshape);
 
 }
 ChRaySensor::~ChRaySensor(){
 	this->rays.clear();
 }
 
-/// Initialize the ChRaySensor
-/// pass in: aboutZMinAngle, aboutZMaxAngle, aboutZSamples, aboutYMinAngle, aboutYMaxAngle,aboutYSamples,minRange,maxRange
+// Initialize the ChRaySensor
 void ChRaySensor::Initialize(chrono::ChCoordsys<double> offsetPose,
 		int aboutYSamples, int aboutZSamples,
 		double aboutYMinAngle, double aboutYMaxAngle,
 		double aboutZMinAngle, double aboutZMaxAngle,
 		double minRange, double maxRange){
-	/***TEMPORARY PARENT OBJECT***/
-	//,chrono::ChCoordsys<double> parentPose){
-
 
 	this->minRange = minRange;
 	this->maxRange = maxRange;
@@ -84,15 +42,14 @@ void ChRaySensor::Initialize(chrono::ChCoordsys<double> offsetPose,
 	if(aboutZSamples < 1) aboutZSamples = 1;
 	if(aboutYSamples < 1) aboutYSamples = 1;
 
-
 	chrono::ChVector<double> start, end, axis;
 	double yawAngle, pitchAngle;
 	chrono::ChQuaternion<double> ray;
 	double yDiff = aboutYMaxAngle - aboutYMinAngle;
 	double pDiff = aboutZMaxAngle - aboutZMinAngle;
 
-	for(unsigned int j=0; j< (unsigned int)aboutZSamples; ++j){
-		for(unsigned int i=0; i<(unsigned int)aboutYSamples; ++i){
+	for(int j=0; j< aboutZSamples; ++j){
+		for(int i=0; i<aboutYSamples; ++i){
 
 			yawAngle = (aboutYSamples == 1) ? 0 :
 					i * yDiff / (aboutYSamples - 1) + aboutYMinAngle;
@@ -100,60 +57,27 @@ void ChRaySensor::Initialize(chrono::ChCoordsys<double> offsetPose,
 			pitchAngle = (aboutZSamples == 1) ? 0 :
 					j * pDiff / (aboutZSamples - 1) + aboutZMinAngle;
 
-			//conduct the rotation
-			//conduct the rotation
-
-			//NOT USING THE COLLISION PARENT - MAY BE WRONG ROTATION BECAUSE OF THIS
-			/****NEED TO ADD IN COLLISION PARENT TO ROTATE BASED ON THAT******/
 			//Yaw, Roll, Pitch according to ChQuaternion.h
 			ray.Q_from_NasaAngles(chrono::ChVector<double>(yawAngle, 0.0, -pitchAngle));
 
-			/********************THIS HAS A BUG*****************************/
-			/********************SOMETHING WITH ROTATIONS - PARTICULARLY OFFSET*****************/
 			axis = (offsetPose.rot * ray).Rotate(chrono::ChVector<double>(1.0,0,0));
 
 			start = (axis * minRange) + offsetPose.pos;
 			end = (axis * maxRange) + offsetPose.pos;
 
 			this->AddRay(start,end);
-			//std::cout<<"Added ray: "<<i<<", "<<j<<" at start: "<<start.x<<", "<<start.y<<", "<<start.z<<" , end: "<<end.x<<", "<<end.y<<", "<<end.z<< std::endl;
 		}
 	}
-
 }
 
-
-
-/// \brief Physics engine specific method for updating the rays.
 void ChRaySensor::UpdateRays(){
 
 }
 
-/// \brief Add a ray to the collision.
-/// \param[in] _start Start of the ray.
-/// \param[in] _end End of the ray.
 void ChRaySensor::AddRay(const chrono::ChVector<double> &_start,
 		const chrono::ChVector<double> &_end){
 	std::shared_ptr<ChRayShape> ray = std::make_shared<ChRayShape>(this->parent, visualize);
 
-	//this->parent->GetSystem()->Add(ray);
-
-	//auto link = std::make_shared<chrono::ChLinkLockLock>();
-	//std::shared_ptr<chrono::ChBody> this_ptr(this);
-	//	auto tempBox = std::make_shared<ChBodyEasyBox>(.1, .1, .1,  // x, y, z dimensions
-	//			3000,       // density
-	//			true,      // enable contact geometry
-	//			true        // enable visualization geometry
-	//	);
-	//tempBox->SetPos(this->GetPos());
-
-	//tempBox->SetBodyFixed(true);
-
-	//mphysicalSystem->Add(tempBox);
-	//link->Initialize(std::make_shared<ChRaySensor>(*this),ray,true,this->GetCoord(),ray->GetCoord());
-	//mphysicalSystem->AddLink(link);
-	//this->AddMarker(ray);
-	//this->AddAsset(ray->Get);
 	ray->SetPoints(_start, _end);
 	this->rays.push_back(ray);
 
@@ -161,7 +85,6 @@ void ChRaySensor::AddRay(const chrono::ChVector<double> &_start,
 
 double ChRaySensor::GetRange(unsigned int _index){
 	if(_index >= this->rays.size()){
-		//std::cout<<"Index out of bounds
 		return -1;
 	}
 	//add min range because we measured from min range
@@ -188,12 +111,9 @@ void ChRaySensor::Update(){
 		for(unsigned int i = 0; i<this->rays.size(); i++){
 			this->rays[i]->SetLength(fullRange);
 		}
-		//std::cout<<"UpdateRays: "<<this->parent->GetChTime()<<std::endl;
 	}
 	std::vector<std::shared_ptr<ChRayShape>>::iterator iter;
 	for(iter = this->rays.begin(); iter != this->rays.end(); ++iter){
 		(*iter)->Update(updateCollisions);
 	}
-
 }
-

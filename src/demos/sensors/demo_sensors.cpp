@@ -153,7 +153,7 @@ int main(int argc, char* argv[]) {
 	lidarSensor->Initialize(chrono::ChCoordsys<double>(
 			chrono::ChVector<double>({0,0,0}),	//offset x,y,z
 			chrono::ChQuaternion<double>(Q_from_NasaAngles({0,0,0}))), //offset yaw,roll,pitch
-			100, 1, -3.14, 3.14, -3.14, 3.14, .2, 3);
+			100, 100, -1.57, 1.57, -3.14, 3.14, .2, 3);
 	//offset pose, z samples, y samples, z min angle, z max angle, min distance, max distance
 
 	auto gpsBox = std::make_shared<ChBodyEasyBox>(.1, .1, .1,  // x, y, z dimensions
